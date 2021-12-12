@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCT-kazalnik</title>
+
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <script src="localStorageDB.js"></script> <!-- https://github.com/DVLP/localStorageDB to allow more than 5 MB of storage -->
+
+    <div id="showView" class="" style="width: 100vw;height: 100vh;">
+        <!-- img, full screen -->
+        <img id="slika" style="max-width: 100%;max-height: 100%;">
+
+        <div id="configView" class="" style="padding-top: 2em;">
+            <!-- File Picker -->
+            <input type="file" id="picker" accept="image/*">
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("picker").addEventListener("input", previewFile)
+
+        // https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
+        function previewFile() {
+            const preview = document.querySelector('img');
+            const file = document.querySelector('input[type=file]').files[0];
+            const reader = new FileReader();
+
+            reader.addEventListener("load", function () {
+                // convert image file to base64 string
+                preview.src = reader.result;
+                ldb.set("slika", reader.result)
+            }, false);
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+
+        ldb.get('slika', function (value) {
+            //console.log('And the value is', value);
+            if(!value) {
+                // not configured yet
+                document.getElementById("configView").classList.remove("hidden");
+            } else {
+                document.getElementById("showView").classList.remove("hidden");
+                document.getElementById("slika").src = value
+            }
+
+        });
+    </script>
+</body>
+</html>
